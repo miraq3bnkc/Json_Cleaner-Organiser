@@ -12,4 +12,13 @@ for file in os.scandir(path):
             print("Cleaning ", file.name, ":")
             data = json.load(f) # Load .json file for clean up
         
-        
+        #De-duplicate json data (remove duplicate tweets by id)
+        unique_data = {tweet["id"]: tweet for tweet in data}.values()
+
+        # Convert back to list
+        unique_data = list(unique_data)
+
+        # Overwrite file with cleaned data
+        with open(file.path, "w", encoding="utf-8") as f:
+            json.dump(unique_data, f, indent=4)
+
