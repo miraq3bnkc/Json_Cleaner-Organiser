@@ -91,8 +91,47 @@ def extract_card(card):
              "article_domain":article_domain, 
              "article_title":article_title}
 
+def get_media(entities):
+    media=[]
+
+    if entities.get("media"):
+        for post_media in entities.get("media"):
+            media.append(post_media.get("type"))
+    return media
+
+def extract_entities(entities, tweet):
+    hashtags=[]
+    urls=[]
+    user_mentions=[]
+
+    #Get the hashtags used in text of the post 
+    if entities["hashtags"]!=[]:
+        for hashtag in entities["hashtags"]:
+            hashtags.append(hashtag.get("text"))
+
+    #Get the type and number of media used in the post
+    if tweet.get("extendedEntities"):
+        #only quotes in tweet data have the field of extendedEntities in our dataset
+        media=get_media(tweet.get("extendedEntities"))
+    else:
+        media=get_media(entities)
+
+    #Get the URLs in the text of the post
+    if entities["urls"]:
+        for url in entities["urls"]:
+            urls.append(url.get("expanded_url"))
+
+    #Get the user mentions written in the tweeter post
+    if entities["user_mentions"]:
+        for mention in entities["user_mentions"]:
+            user_mentions.append(mention.get("screen_name"))
+
+    return [hashtags, media, urls, user_mentions]
+
+
 def clean_tweet(tweet):  
-    
+    entities=extract_entities(tweet.get("entities"), tweet)
+
     cleaned_tweet={
         "id": tweet.get("id"),
         "url":tweet.get("url"),
@@ -106,11 +145,14 @@ def clean_tweet(tweet):
         "bookmarkCount": tweet.get("bookmarkCount"),
         "isReply": tweet.get("isReply"),
         "isQuote": tweet.get("isQuote"),
-        "isConversationControlled": tweet.get("isConversationControlled")
+        "isConversationControlled": tweet.get("isConversationControlled"),
+        "author" : extract_author(tweet.get("author")),
+        "linked_article_values": extract_card(tweet.get("card")),
+        "hashtags": entities[0],
+        "media": entities[1],
+        "urls": entities[2],
+        "user_mentions": entities[3]
     }
-
-    cleaned_tweet["author"] = extract_author(tweet.get("author"))
-    cleaned_tweet["linked_article_values"]= extract_card(tweet.get("card"))
 
     return cleaned_tweet
 
