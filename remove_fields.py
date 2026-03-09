@@ -33,7 +33,7 @@ def get_author_entities(entities):
 
      #get description urls
      description= entities.get("description")
-     if description.get("urls")!=[]:
+     if description.get("urls"):
         for url in description.get("urls"):
             description_urls.append(url.get("expanded_url"))
 
@@ -72,6 +72,10 @@ def extract_author(author):
 
 #Extract string values with key: description, domain or title from card/legacy/binding_values
 def extract_card(card):
+    article_description=None
+    article_domain=None
+    article_title=None
+
     if card!={}:
         binding_values=card["legacy"]["binding_values"]
         for b_value in binding_values:
@@ -82,10 +86,6 @@ def extract_card(card):
                 article_domain=b_value["value"]["string_value"]
             elif key=="title":
                 article_title=b_value["value"]["string_value"]
-    else:
-        article_description=None
-        article_domain=None
-        article_title=None
 
     return {"article_description":article_description,
              "article_domain":article_domain, 
@@ -105,7 +105,7 @@ def extract_entities(entities, tweet):
     user_mentions=[]
 
     #Get the hashtags used in text of the post 
-    if entities["hashtags"]!=[]:
+    if entities.get("hashtags"):
         for hashtag in entities["hashtags"]:
             hashtags.append(hashtag.get("text"))
 
@@ -117,12 +117,12 @@ def extract_entities(entities, tweet):
         media=get_media(entities)
 
     #Get the URLs in the text of the post
-    if entities["urls"]:
+    if entities.get("urls"):
         for url in entities["urls"]:
             urls.append(url.get("expanded_url"))
 
     #Get the user mentions written in the tweeter post
-    if entities["user_mentions"]:
+    if entities.get("user_mentions"):
         for mention in entities["user_mentions"]:
             user_mentions.append(mention.get("screen_name"))
 
@@ -165,13 +165,3 @@ def clean_tweet(tweet, are_quote_data):
             cleaned_tweet["quote"] = clean_tweet(tweet["quote"], True)
 
     return cleaned_tweet
-
-
-
-with open("test.json", "r", encoding="utf-8") as f:
-    tweets = json.load(f) # Load .json file for clean up
-
-cleaned_tweets=[clean_tweet(tweet, False) for tweet in tweets]
-
-with open("test_output.json", "w", encoding="utf-8") as f:
-        json.dump(cleaned_tweets, f, indent=2, ensure_ascii=False)
