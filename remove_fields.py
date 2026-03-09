@@ -27,8 +27,26 @@ def get_profession(professional):
         professional_type  
             ]
 
+def get_author_entities(entities):
+     description_urls=[]
+     linked_urls=[]
+
+     #get description urls
+     description= entities.get("description")
+     if description.get("urls")!=[]:
+        for url in description.get("urls"):
+            description_urls.append(url.get("expanded_url"))
+
+     linked=entities.get("url")
+     if linked:
+          for url in linked.get("urls"):
+               linked_urls.append(url.get("expanded_url"))
+
+     return [description_urls, linked_urls]
+
 def extract_author(author):
     profession= get_profession(author.get("professional"))
+    entities= get_author_entities(author.get("entities"))
 
     cleaned_author={
         "userName": author.get("userName"),
@@ -41,6 +59,8 @@ def extract_author(author):
         "canDm": author.get("canDm"),
         "canMediaTag": author.get("canMediaTag"),
         "createdAt": author.get("createdAt"),
+        "description_urls": entities[0],
+        "linked_urls": entities[1],
         "favouritesCount": author.get("favouritesCount"),
         "mediaCount": author.get("mediaCount"),
         "statusesCount": author.get("statusesCount"),
