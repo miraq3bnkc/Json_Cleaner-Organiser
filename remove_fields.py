@@ -129,12 +129,11 @@ def extract_entities(entities, tweet):
     return [hashtags, media, urls, user_mentions]
 
 
-def clean_tweet(tweet):  
+def clean_tweet(tweet, are_quote_data):  
     entities=extract_entities(tweet.get("entities"), tweet)
 
     cleaned_tweet={
         "id": tweet.get("id"),
-        "url":tweet.get("url"),
         "text":tweet.get("text"),
         "retweetCount":tweet.get("retweetCount"),
         "replyCount": tweet.get("replyCount"),
@@ -143,8 +142,6 @@ def clean_tweet(tweet):
         "viewCount": tweet.get("viewCount"),
         "createdAt": tweet.get("createdAt"),
         "bookmarkCount": tweet.get("bookmarkCount"),
-        "isReply": tweet.get("isReply"),
-        "isQuote": tweet.get("isQuote"),
         "isConversationControlled": tweet.get("isConversationControlled"),
         "author" : extract_author(tweet.get("author")),
         "linked_article_values": extract_card(tweet.get("card")),
@@ -154,6 +151,19 @@ def clean_tweet(tweet):
         "user_mentions": entities[3]
     }
 
+    #If the data we are handling are not of the quote then we shall include
+    # "isReply", "url", "isQuote" fields
+    #Otherwise, those fields do not exist in the data of the quotes
+    if not are_quote_data:
+        cleaned_tweet["isReply"] = tweet.get("isReply")
+        cleaned_tweet["isQuote"] = tweet.get("isQuote")
+        cleaned_tweet["url"] = tweet.get("url")
+
+    # quoted tweet
+    if tweet.get("isQuote"):
+        if "quote" in tweet:
+            cleaned_tweet["quote"] = clean_tweet(tweet["quote"], True)
+
     return cleaned_tweet
 
 
@@ -161,7 +171,7 @@ def clean_tweet(tweet):
 with open("test.json", "r", encoding="utf-8") as f:
     tweets = json.load(f) # Load .json file for clean up
 
-cleaned_tweets=[clean_tweet(tweet) for tweet in tweets]
+cleaned_tweets=[clean_tweet(tweet, False) for tweet in tweets]
 
 with open("test_output.json", "w", encoding="utf-8") as f:
         json.dump(cleaned_tweets, f, indent=2, ensure_ascii=False)
