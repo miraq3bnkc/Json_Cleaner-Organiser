@@ -70,6 +70,27 @@ def extract_author(author):
 
     return cleaned_author
 
+#Extract string values with key: description, domain or title from card/legacy/binding_values
+def extract_card(card):
+    if card!={}:
+        binding_values=card["legacy"]["binding_values"]
+        for b_value in binding_values:
+            key=b_value.get("key")
+            if key=="description":
+                article_description=b_value["value"]["string_value"]
+            elif key=="domain":
+                article_domain=b_value["value"]["string_value"]
+            elif key=="title":
+                article_title=b_value["value"]["string_value"]
+    else:
+        article_description=None
+        article_domain=None
+        article_title=None
+
+    return {"article_description":article_description,
+             "article_domain":article_domain, 
+             "article_title":article_title}
+
 def clean_tweet(tweet):  
     
     cleaned_tweet={
@@ -89,6 +110,7 @@ def clean_tweet(tweet):
     }
 
     cleaned_tweet["author"] = extract_author(tweet.get("author"))
+    cleaned_tweet["linked_article_values"]= extract_card(tweet.get("card"))
 
     return cleaned_tweet
 
