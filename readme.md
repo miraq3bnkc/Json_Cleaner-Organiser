@@ -2,11 +2,113 @@
 
 This document describes the process of a **cleaning X(formerly Twitter) post data**. 
 
-The cleaning process removes unnecessary metadata from the raw X/Twitter response and keeps only the fields relevant for analysis. Specifically these data were obtained through [Apify](https://apify.com/) actor [🏯 Tweet Scraper V2 - X / Twitter Scraper](https://apify.com/apidojo/tweet-scraper).
+The cleaning process removes unnecessary metadata from the raw X/Twitter response and irrelevant X posts, keeping only the fields and posts relevant for analysis. Specifically these data were obtained through [Apify](https://apify.com/) actor [🏯 Tweet Scraper V2 - X / Twitter Scraper](https://apify.com/apidojo/tweet-scraper).
+
+---
+# Process of Removing Irrelevant Posts (remove_posts.py)
+
+Here is a **small, clean README section** you can paste under something like **“Data Cleaning Scripts”** or **“Preprocessing”**. I kept it concise and documentation-style so it fits well in a repo.
 
 ---
 
-# Example Cleaned Tweet
+## Duplicate and Language Filtering
+
+A preprocessing script was implemented to remove **noisy or irrelevant tweets** from the dataset before further analysis.
+
+The script performs the following cleaning steps:
+
+### 1. Duplicate Removal
+
+Duplicate tweets are removed based on their **unique tweet ID**.
+
+If multiple entries with the same `id` exist, only the **last occurrence** is kept.
+
+This is implemented using a dictionary where the tweet `id` is used as the key:
+
+```
+unique_data = {tweet["id"]: tweet for tweet in data}.values()
+```
+
+This ensures that the dataset contains **only one instance of each tweet**.
+
+---
+
+### 2. Language Filtering
+
+Tweets that are **not related to the Greek language** are removed.
+
+A tweet is considered valid if at least one of the following conditions is met:
+
+1. **The tweet text contains Greek characters**
+
+The script detects Greek characters using a regular expression:
+
+```
+[α-ωΑ-Ω]
+```
+
+This captures tweets written in Greek.
+
+---
+
+2. **The tweet links to a Greek domain**
+
+Some tweets may contain only a URL without text.
+In these cases, the script checks whether the linked domain ends with:
+
+```
+.gr
+```
+
+If the link belongs to a Greek domain, the tweet is preserved.
+
+---
+
+### 3. Manual Review of Uncertain Cases
+
+If a tweet:
+
+* does not contain Greek characters
+* does not link to a `.gr` domain
+
+the script **prompts the user for manual confirmation** before deletion.
+
+The following information is displayed:
+
+* Tweet text
+* Tweet URL
+* Referenced URL
+
+The user can then choose whether to keep or delete the tweet.
+
+Example prompt:
+
+```
+--- POSSIBLE NON-GREEK TWEET ---
+Text: ...
+Tweet URL: ...
+Referenced URL: ...
+
+Delete this tweet? (y/n)
+```
+
+This step ensures that **important tweets written in Greeklish or mixed language are not mistakenly removed**.
+
+---
+
+### Result
+
+After applying this script:
+
+* Duplicate tweets are removed
+* Non-Greek tweets are filtered
+* Ambiguous cases are manually reviewed
+
+This produces a **cleaner dataset focused on Greek-language content**, which is required for our task.
+
+---
+# Process of Cleaning Post Metadata (remove_fields.py)
+## Example Cleaned Tweet
 
 ```json
 {
@@ -57,7 +159,7 @@ The cleaning process removes unnecessary metadata from the raw X/Twitter respons
 
 ---
 
-# Reply Information
+## Reply Information
 
 If `"isReply": true`, the following fields are included:
 
@@ -71,7 +173,7 @@ These fields identify the **tweet and user being replied to**.
 
 ---
 
-# Author Information
+## Author Information
 
 The `"author"` object contains metadata about the user that posted the tweet.
 
@@ -100,7 +202,7 @@ Additional fields extracted from the raw API:
 
 ---
 
-# Linked Article Information
+## Linked Article Information
 
 If a tweet contains a **link preview card**, metadata is extracted and stored under:
 
@@ -120,7 +222,7 @@ These values are extracted from the `card` object in the raw tweet response.
 
 ---
 
-# Entities Field
+## Entities Field
 
 The `entities` object contains structured elements present in the tweet.
 
@@ -133,7 +235,7 @@ The `entities` object contains structured elements present in the tweet.
 
 ---
 
-# Entities Cleaning Process
+## Entities Cleaning Process
 
 The raw Twitter API response contains extensive metadata that is removed during preprocessing.
 
@@ -256,7 +358,7 @@ Only the **media type, hashtag name, urls expanded_url** and **user mentions scr
 
 ---
 
-# Removed Fields
+## Removed Fields
 
 Some fields were removed because they were either unused or always empty in the dataset.
 
@@ -271,7 +373,7 @@ These were consistently empty across the collected tweets.
 
 ---
 
-# Quote and Retweet Handling
+## Quote and Retweet Handling
 
 ### Quoted Tweets
 
@@ -319,3 +421,8 @@ Observations from the collected dataset:
 * No retweets were observed.
 * Some tweets contain article preview cards.
 * Media objects may appear in `entities` or `extendedEntities`.
+
+---
+# Final Process (openfiles.py)
+
+After removing unnecessary fields and posts, the .json files are merged into one file and sorted according to the latest creation time of the post. 
