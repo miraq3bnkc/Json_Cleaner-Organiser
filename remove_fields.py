@@ -1,7 +1,7 @@
 """This python script is created for the purposes of "cleaning" the .json data
    that contain information about X.com posts. 
    Specifically it will remove unnecessary fields and change/rename some other fields.
-   This will all be according to the example.txt file were you can see the changes
+   This will all be according to the readme file were you can see the changes
    to be made. 
 
    This "clean up" is part of a bigger analysis of X posts that were obtained from 
