@@ -156,6 +156,11 @@ def clean_tweet(tweet, are_quote_data):
     #Otherwise, those fields do not exist in the data of the quotes
     if not are_quote_data:
         cleaned_tweet["isReply"] = tweet.get("isReply")
+        if tweet.get("isReply"):
+            cleaned_tweet["inReplyToId"]=tweet.get("inReplyToId")
+            cleaned_tweet["inReplyToUserId"] = tweet.get("inReplyToUserId")
+            cleaned_tweet["inReplyToUsername"] = tweet.get("inReplyToUsername")
+
         cleaned_tweet["isQuote"] = tweet.get("isQuote")
         cleaned_tweet["url"] = tweet.get("url")
 

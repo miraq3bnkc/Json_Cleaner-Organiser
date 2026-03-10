@@ -2,8 +2,15 @@ import os
 import json
 from remove_posts import de_duplicate,delete_tweets
 from remove_fields import clean_tweet
+from datetime import datetime
 
 path = r"../apify/digital_ids" #path that includes the .json files (only) 
+
+#function for accessing the datetime string existing in "createdAt" field
+def parse_date(tweet):
+    return datetime.strptime(tweet["createdAt"], "%a %b %d %H:%M:%S %z %Y")
+
+all_tweets=[]
 
 #Loop through all files in folder and clean them
 for file in os.scandir(path):
@@ -20,9 +27,17 @@ for file in os.scandir(path):
         #Delete noise (non-greek or non-greeklish tweets)
         denoised_data=delete_tweets(unique_data)
 
+        #removing unnecessary fields in tweet data
         cleaned_tweets=[clean_tweet(tweet, False) for tweet in denoised_data]
 
-        # Overwrite file with cleaned data
-        with open(file.path, "w", encoding="utf-8") as f:
-            json.dump(cleaned_tweets, f, indent=4)
+        all_tweets.extend(cleaned_tweets) #merging all the tweets together via extend
+
+
+# sort tweets by createdAt
+tweets_sorted = sorted(all_tweets, key=parse_date,reverse=True)
+
+
+# save merged file
+with open("merged.json", "w", encoding="utf-8") as f:
+    json.dump(tweets_sorted, f, ensure_ascii=False, indent=2)
 
