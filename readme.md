@@ -379,16 +379,14 @@ If `"isQuote": true`, the quoted tweet originally appears under:
 ```
 "quote": { ... }
 ```
-
+This object contains the **same structure as a normal tweet**.
 It was decided to separate the original tweet from the quote. So, the tweet that quotes another tweet will have the additional fetures:
 
 ```
 "quoted_text": text
 "quoted_tweet_id": id
 ```
-And the quoted tweet will appear as a separate tweet (unless it appear irrelevant, or it is not in Greek)
-
-This object contains the **same structure as a normal tweet**.
+And the quoted tweet will appear as a **separate tweet** (unless it appear irrelevant, or it is not in Greek)
 
 Note:
 
