@@ -107,12 +107,12 @@ def extract_entities(entities, tweet):
         for hashtag in entities["hashtags"]:
             hashtags.append(hashtag.get("text"))
 
-    #Get the type and number of media used in the post
+    #Get the number of media used in the post
     if tweet.get("extendedEntities"):
         #only quotes in tweet data have the field of extendedEntities in our dataset
-        media=get_media(tweet.get("extendedEntities"))
+        media=len(get_media(tweet.get("extendedEntities")))
     else:
-        media=get_media(entities)
+        media=len(get_media(entities))
 
     #Get the URLs in the text of the post
     if entities.get("urls"):
@@ -162,7 +162,6 @@ def clean_tweet(tweet, are_quote_data):
             cleaned_tweet["inReplyToUserId"] = tweet.get("inReplyToUserId")
             cleaned_tweet["inReplyToUsername"] = tweet.get("inReplyToUsername")
 
-        cleaned_tweet["isQuote"] = tweet.get("isQuote")
         cleaned_tweet["url"] = tweet.get("url")
 
     # quoted tweet
