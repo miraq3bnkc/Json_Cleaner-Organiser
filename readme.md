@@ -6,9 +6,6 @@ The cleaning process removes unnecessary metadata from the raw X/Twitter respons
 
 ---
 # Process of Removing Irrelevant Posts (remove_posts.py)
-
----
-
 ## Duplicate and Language Filtering
 
 A preprocessing script was implemented to remove **noisy or irrelevant tweets** from the dataset before further analysis.
@@ -99,6 +96,7 @@ Delete this tweet? (y/n)
 
 This step ensures that **tweets with Greek context are not mistakenly removed**.
 This step was firstly included for Greeklish representations, but since only one post was found with this representation, it was deemed an unnecessary check.
+
 ---
 
 ### Result
