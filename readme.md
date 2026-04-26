@@ -27,8 +27,13 @@ unique_data = {tweet["id"]: tweet for tweet in data}.values()
 This ensures that the dataset contains **only one instance of each tweet**.
 
 ---
+### 2. Deleting posts made by Grok
 
-### 2. Language Filtering
+X posts that are created by Grok are disregarded, since they have no useful information for our analysis. The script filters out posts created by the author with username "grok". If the username is not "grok" the script continuous with the following steps bellow.
+
+---
+
+### 3. Language Filtering
 
 Tweets that are **not related to the Greek language** are removed.
 
