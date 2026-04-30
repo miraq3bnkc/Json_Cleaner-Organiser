@@ -41,45 +41,39 @@ def extract_expanded_url(tweet):
     return None
 
 #Delete unrelated tweets according to the language
-def delete_tweets(tweets):
+def delete_tweets(tweet):
+    text = tweet.get("text", "")
+    url = tweet.get("url")
+    expanded_url = extract_expanded_url(tweet)
 
-    cleaned_tweets = []
+    #Rule 0: Filter out @grok posts
+    if not tweet.get("author").get("userName")=="grok":
 
-    for tweet in tweets:
-        text = tweet.get("text", "")
-        url = tweet.get("url")
-        expanded_url = extract_expanded_url(tweet)
+        # Rule 1: Contains text in Greek language
+        if contains_greek(text):
+            return True
 
-        #Rule 0: Delete Grok posts: (do not append them to the final cleaned tweets)
-        if not tweet.get("author").get("userName")=="grok":
+        # Rule 2: URL from Greek domain
+        if is_greek_domain(expanded_url):
+            return True
+            
+        # Rule 3: If tweet contains only a link, but no expanded_url or tweet url skip 
+        if contains_link_only(text):
+            # Rule 4: Ask user permission for deletion, if tweet url or expanded url included
+            if url or expanded_url:
+            
+                print("\n--- POSSIBLE NON-GREEK TWEET ---")
+                print("Text:", text)
+                print("Tweet URL:", url)
+                print("Referenced URL:",expanded_url)
 
-            # Rule 1: Contains text in Greek language
-            if contains_greek(text):
-                cleaned_tweets.append(tweet)
-                continue
+                choice = input("Delete this tweet? (y/n): ").strip().lower()
 
-            # Rule 2: URL from Greek domain
-            if is_greek_domain(expanded_url):
-                cleaned_tweets.append(tweet)
-                continue
-                
-            # Rule 3: If tweet contains only a link, but no expanded_url or tweet url skip 
-            if contains_link_only(text):
-                # Rule 4: Ask user permission for deletion, if tweet url or expanded url included
-                if url or expanded_url:
-                
-                    print("\n--- POSSIBLE NON-GREEK TWEET ---")
-                    print("Text:", text)
-                    print("Tweet URL:", url)
-                    print("Referenced URL:",expanded_url)
+                if choice == "n":
+                    return True
+                else:
+                    print("Deleted.")
+                    return False
 
-                    choice = input("Delete this tweet? (y/n): ").strip().lower()
-
-                    if choice == "n":
-                        cleaned_tweets.append(tweet)
-                    else:
-                        print("Deleted.")
-
-            #Checking for Greeklish text was not included since only one post was in Greeklish
-
-    return cleaned_tweets
+        #Checking for Greeklish text was not included since only one post was in Greeklish
+        return False

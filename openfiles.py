@@ -25,32 +25,37 @@ for file in os.scandir(path):
         #De-duplicate json data (remove duplicate tweets by id)
         unique_data = de_duplicate(data)
 
-        #Delete noise (non-greek or non-greeklish tweets)
-        denoised_data=delete_tweets(unique_data)
-        
-        #removing unnecessary fields in tweet data
-        #And separating quotes from tweets
+
         cleaned_tweets=[]
         cleaned_quotes=[]
-        for tweet in denoised_data:
-            potential_tweet, potential_quote=clean_tweet(tweet,False)
+        for tweet in unique_data:
+            #Delete noise (non-greek or non-greeklish tweets)
+            kept=delete_tweets(tweet)
             
-            cleaned_tweets.append(potential_tweet)
-            if potential_quote:
-                cleaned_quotes.append(potential_quote)
+            #if the tweet post was kept (was not deleted)
+            if kept:
+                #removing unnecessary fields in tweet data
+                #And separating quotes from tweets
+                potential_tweet, potential_quote=clean_tweet(tweet,False)
+            
+                cleaned_tweets.append(potential_tweet)
+                if potential_quote:
+                    #filter out irrelevant quotes
+                    relevant_quote=delete_tweets(potential_quote)
+                    if relevant_quote: 
+                        cleaned_quotes.append(potential_quote)
 
         all_tweets.extend(cleaned_tweets) #merging all the tweets together via extend
         all_quotes.extend(cleaned_quotes) #the same for quotes
         
         
-#delete noisy and duplicated quotes
+#de-duplicated quotes
 unique_quotes=de_duplicate(all_quotes)
-final_quotes=delete_tweets(unique_quotes)
 
 #checking if the quotes do not already exist in the set of tweets
 existing_ids = {t["id"] for t in all_tweets}
 
-for quote in final_quotes:
+for quote in unique_quotes:
     if quote.get("id") not in existing_ids:
         all_tweets.append(quote)  #adding quotes to the collection of tweets as separate entities
         existing_ids.add(quote.get("id"))

@@ -44,10 +44,10 @@ def get_user_list(tweets):
             "userName": tweet.get("author").get("userName") 
         }
 
-        found=0
+        found=1
         for user in users:
             if user["user_id"]==potential_user["user_id"]:
-                found=1
+                found=0
                 break
         
         if found==1:
@@ -56,5 +56,10 @@ def get_user_list(tweets):
 
     # save user list in a file
     with open("users.json", "w", encoding="utf-8") as f:
-        json.dump(users, f, ensure_ascii=False)
+        json.dump(users, f, ensure_ascii=False, indent=2)
     
+
+#Delete usernames and keep user ids only
+def map_id_delete_name(users):
+    #work for later
+    return 
