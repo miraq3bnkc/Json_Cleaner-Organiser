@@ -33,31 +33,14 @@ def transform_urls(article_domain,urls):
 
     return urls
 
-def get_user_list(tweets):
-    users=[]
+def get_user_list(tweet,users):
 
-    for tweet in tweets:
-        user_id=tweet.get("author").get("user_id")
+    potential_user = {
+        "id": tweet.get("author").get("user_id"),
+        "userName": tweet.get("author").get("userName") 
+    }
 
-        potential_user = {
-            "user_id": user_id,
-            "userName": tweet.get("author").get("userName") 
-        }
-
-        found=1
-        for user in users:
-            if user["user_id"]==potential_user["user_id"]:
-                found=0
-                break
-        
-        if found==1:
-            users.append(potential_user)
-
-
-    # save user list in a file
-    with open("users.json", "w", encoding="utf-8") as f:
-        json.dump(users, f, ensure_ascii=False, indent=2)
-    
+    users.append(potential_user)
 
 #Delete usernames and keep user ids only
 def map_id_delete_name(users):

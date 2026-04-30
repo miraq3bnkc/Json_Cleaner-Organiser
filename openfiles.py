@@ -13,6 +13,7 @@ def parse_date(tweet):
 
 all_tweets=[]
 all_quotes=[]
+all_users=[]
 #Loop through all files in folder and clean them
 for file in os.scandir(path):
     if file.is_file():
@@ -28,29 +29,39 @@ for file in os.scandir(path):
 
         cleaned_tweets=[]
         cleaned_quotes=[]
+        users=[]
+
         for tweet in unique_data:
             #Delete noise (non-greek or non-greeklish tweets)
             kept=delete_tweets(tweet)
             
             #if the tweet post was kept (was not deleted)
             if kept:
+                
                 #removing unnecessary fields in tweet data
                 #And separating quotes from tweets
                 potential_tweet, potential_quote=clean_tweet(tweet,False)
+
+                #create users list file
+                get_user_list(potential_tweet,users)
             
                 cleaned_tweets.append(potential_tweet)
                 if potential_quote:
                     #filter out irrelevant quotes
                     relevant_quote=delete_tweets(potential_quote)
                     if relevant_quote: 
+                        get_user_list(potential_quote,users)
                         cleaned_quotes.append(potential_quote)
 
         all_tweets.extend(cleaned_tweets) #merging all the tweets together via extend
         all_quotes.extend(cleaned_quotes) #the same for quotes
+        all_users.extend(users)
         
         
-#de-duplicated quotes
+#de-duplicate quotes and users accordingly
 unique_quotes=de_duplicate(all_quotes)
+unique_users=de_duplicate(all_users)
+
 
 #checking if the quotes do not already exist in the set of tweets
 existing_ids = {t["id"] for t in all_tweets}
@@ -68,5 +79,6 @@ tweets_sorted = sorted(all_tweets, key=parse_date,reverse=True)
 with open("merged.json", "w", encoding="utf-8") as f:
     json.dump(tweets_sorted, f, ensure_ascii=False, indent=2)
 
-#create users list file
-get_user_list(tweets_sorted)
+# save user list in a file
+with open("users.json", "w", encoding="utf-8") as f:
+    json.dump(unique_users, f, ensure_ascii=False, indent=2)
