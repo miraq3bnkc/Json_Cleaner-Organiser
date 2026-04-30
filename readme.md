@@ -151,8 +151,8 @@ This produces a **cleaner dataset focused on Greek-language content**, which is 
   "media": integer,
   "urls": ["expanded_url1", "expanded_url2"],
   "user_mentions": ["username1", "username2"],
-  "isQuote": false,
-  "isConversationControlled": false
+  "quoted_text": "text",
+  "quoted_tweet_id": "id of quoted post"
 }
 ```
 
