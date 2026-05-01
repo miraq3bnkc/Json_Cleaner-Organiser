@@ -183,13 +183,13 @@ def clean_tweet(tweet, are_quote_data):
     cleaned_quote={} #return empty quote if no quote was included
     quote_user=[]
     if tweet.get("isQuote"):
-        if "quote" in tweet:
-            #we only keep the text and id of the quote as context
-            cleaned_tweet["quoted_text"] = tweet.get("quote").get("text")
-            cleaned_tweet["quoted_tweet_id"] = tweet.get("quote").get("id")
-    
+        if "quote" in tweet:    
             #keep quote as a SEPARATE tweet
             cleaned_quote,quote_user = clean_tweet(tweet["quote"], are_quote_data=True)
+
+            #we only keep the text and id of the quote as context
+            cleaned_tweet["quoted_text"] = cleaned_quote.get("text")
+            cleaned_tweet["quoted_tweet_id"] = tweet.get("quote").get("id")
 
     if are_quote_data :
         #basically returns only the quote data and user_info 
