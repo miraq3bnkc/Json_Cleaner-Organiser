@@ -171,10 +171,9 @@ def clean_tweet(tweet, are_quote_data):
         if tweet.get("isReply"):
             cleaned_tweet["inReplyToId"]=tweet.get("inReplyToId")
             cleaned_tweet["inReplyToUserId"] = tweet.get("inReplyToUserId")
-            cleaned_tweet["inReplyToUsername"] = tweet.get("inReplyToUsername")
 
             #Update mentions list if needed
-            cleaned_tweet["user_mentions"]=transform_mentions(cleaned_tweet["inReplyToUsername"],cleaned_tweet["user_mentions"])
+            cleaned_tweet["user_mentions"]=transform_mentions(tweet.get("inReplyToUsername"),cleaned_tweet["user_mentions"])
 
         cleaned_tweet["url"] = tweet.get("url")
 
