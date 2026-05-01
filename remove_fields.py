@@ -8,7 +8,7 @@
    an Apify actor: https://apify.com/apidojo/tweet-scraper.
    The changes are curated for the specific analysis. 
 """
-from additional.data_transform import transform_mentions, transform_urls
+from additional.data_transform import transform_mentions, transform_urls, remove_mention_text
 
 def get_author_entities(entities):
      description_urls=[]
@@ -149,7 +149,7 @@ def clean_tweet(tweet, are_quote_data):
 
     cleaned_tweet={
         "id": tweet.get("id"),
-        "text":tweet.get("text"),
+        "text": remove_mention_text(tweet.get("text"),entities[3]),
         "retweetCount":tweet.get("retweetCount"),
         "replyCount": tweet.get("replyCount"),
         "likeCount": tweet.get("likeCount"),

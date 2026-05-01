@@ -1,7 +1,6 @@
 """Transforming the raw data extracted from the raw tweet response"""
 
 import hashlib
-import json
 
 #Keep only the mentions that are not the default mention by replying to a post
 def transform_mentions(reply_username, mentions):
@@ -56,3 +55,10 @@ def replace_username_id(user_mentions,users):
                 user_mentions[i]=new_id #replace username with new id
 
     return user_mentions
+
+#Remove mentions from text
+def remove_mention_text(text,user_mentions):
+    if len(user_mentions)>=1:
+        for mention in user_mentions:
+            text = text.replace(mention, "ΧΡΗΣΤΗΣ")
+    return text
