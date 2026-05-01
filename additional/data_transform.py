@@ -1,5 +1,6 @@
 """Transforming the raw data extracted from the raw tweet response"""
 
+import hashlib
 import json
 
 #Keep only the mentions that are not the default mention by replying to a post
@@ -42,7 +43,37 @@ def get_user_list(tweet,users):
 
     users.append(potential_user)
 
-#Delete usernames and keep user ids only
-def map_id_delete_name(users):
-    #work for later
-    return 
+def anonymize_username(username):
+    return hashlib.sha256(username.encode()).hexdigest()
+
+
+irrelevant_users=[]
+#Replace usernames with user ids
+def replace_username_id(user_mentions,users):
+
+    for i,mention in enumerate(user_mentions):
+        found=0
+        for user in users:
+            if mention==user["userName"]:
+                user_mentions[i]=user["id"]
+                found=1
+                break  #go to the next mention
+    
+        if found==0:
+            #the mentioned user is not in our user list 
+            for ir_user in irrelevant_users:
+                if mention==ir_user["userName"]:
+                    user_mentions[i]=ir_user["id"]
+                    found=1
+                    break
+            
+            if found==0:
+                #if the user is not in our irrelevant list either, add them 
+                irrelevant_user={
+                    "id": anonymize_username(mention),
+                    "userName": mention
+                }
+                user_mentions[i]=irrelevant_user["id"]
+                irrelevant_users.append(irrelevant_user)
+
+    return user_mentions

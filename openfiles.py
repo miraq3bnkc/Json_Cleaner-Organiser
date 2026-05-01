@@ -3,7 +3,7 @@ import json
 from remove_posts import de_duplicate,delete_tweets
 from remove_fields import clean_tweet
 from datetime import datetime
-from additional.data_transform import get_user_list
+from additional.data_transform import get_user_list,replace_username_id
 
 path = r"../apify/digital_ids (Copy)" #path that includes the .json files (only) 
 
@@ -75,10 +75,15 @@ for quote in unique_quotes:
 tweets_sorted = sorted(all_tweets, key=parse_date,reverse=True)
 
 
-# save merged file
-with open("merged.json", "w", encoding="utf-8") as f:
-    json.dump(tweets_sorted, f, ensure_ascii=False, indent=2)
-
 # save user list in a file
 with open("users.json", "w", encoding="utf-8") as f:
     json.dump(unique_users, f, ensure_ascii=False, indent=2)
+
+#Now that we have all the users, let's erase usernames from data
+for i,tweet in enumerate(tweets_sorted):
+    #Step 1: erase usernames from mentions--> replace them with user ids
+    tweets_sorted[i]["user_mentions"]=replace_username_id(tweet["user_mentions"],unique_users)
+
+# save merged file
+with open("merged.json", "w", encoding="utf-8") as f:
+    json.dump(tweets_sorted, f, ensure_ascii=False, indent=2)
