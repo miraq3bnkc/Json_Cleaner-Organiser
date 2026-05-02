@@ -190,6 +190,7 @@ def clean_tweet(tweet, are_quote_data):
             #we only keep the text and id of the quote as context
             cleaned_tweet["quoted_text"] = cleaned_quote.get("text")
             cleaned_tweet["quoted_tweet_id"] = tweet.get("quote").get("id")
+            cleaned_tweet["quoted_user_id"] = tweet.get("quote").get("author").get("id")
 
     if are_quote_data :
         #basically returns only the quote data and user_info 
