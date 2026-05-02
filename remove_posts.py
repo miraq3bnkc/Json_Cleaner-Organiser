@@ -16,7 +16,9 @@ def de_duplicate(data):
 
 # Detect any Greek character
 def contains_greek(text):
-    return bool(re.search(r'[α-ωΑ-Ω]', text))
+    # Remove engineered mentions "@ΧΡΗΣΤΗΣ"
+    text_without_mentions = re.sub(r'@ΧΡΗΣΤΗΣ', '', text)
+    return bool(re.search(r'[α-ωΑ-Ω]', text_without_mentions))
 
 #Detect if text contains only a link
 def contains_link_only(text):
