@@ -15,25 +15,25 @@ users={}
 with open("users.json","r",encoding="utf-8") as f:
     users=json.load(f) #2029 users
 
-G = nx.Graph()
+G = nx.DiGraph()
 G.add_nodes_from(users.values())
 
 for tweet in tweets:
-    user_node=tweet["author"]["user_id"]
-    reply=tweet.get("inReplyToUserId")
+    user_node=tweet["author"]["user_id"] #source node
     
     #add edges for all the replies
+    reply=tweet.get("inReplyToUserId") #target node
     if reply and G.has_node(reply):
         add_with_weight(user_node,reply,G)
 
     #add edges for all mentions
-    mentions=tweet["user_mentions"]
+    mentions=tweet["user_mentions"] #target nodes
     for mention in mentions:
         if G.has_node(mention):
             add_with_weight(user_node,mention,G)
     
     #add edges from quotes
-    quote=tweet.get("quoted_user_id")
+    quote=tweet.get("quoted_user_id") #target node
     if quote and G.has_node(quote):
         add_with_weight(user_node,quote,G)
 
