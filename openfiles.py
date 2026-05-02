@@ -4,6 +4,7 @@ from remove_posts import de_duplicate,delete_tweets
 from remove_fields import clean_tweet
 from datetime import datetime
 from additional.data_transform import replace_username_id
+from graph_structure.network_graph import create_DiGraph,plot_graph
 
 path = r"../apify/digital_ids (Copy)" #path that includes the .json files (only) 
 
@@ -84,3 +85,8 @@ for i,tweet in enumerate(tweets_sorted):
 # save merged file
 with open("merged.json", "w", encoding="utf-8") as f:
     json.dump(tweets_sorted, f, ensure_ascii=False, indent=2)
+
+
+#Create Network graph of user interconnection in the dataset
+G=create_DiGraph(users,tweets_sorted)
+plot_graph(G,1,12)
