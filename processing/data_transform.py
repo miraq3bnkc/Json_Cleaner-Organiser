@@ -1,6 +1,23 @@
 """Transforming the raw data extracted from the raw tweet response"""
 
 import hashlib
+from datetime import date,datetime
+
+#function for accessing the datetime string existing in "createdAt" field
+def parse_date(tweet):
+    return datetime.strptime(tweet["createdAt"], "%a %b %d %H:%M:%S %z %Y")
+
+def account_age(tweet):
+    creation_date=parse_date(tweet["author"]).date()
+    today = date.today()
+    #account age in days
+    account_age=(today-creation_date).days
+
+    #make new field about age and remove the createdAt
+    tweet["author"]["account_age_days"] = account_age
+    del tweet["author"]["createdAt"]
+
+    return tweet
 
 #Keep only the mentions that are not the default mention by replying to a post
 def transform_mentions(reply_username, mentions):

@@ -34,16 +34,19 @@ def create_DiGraph(users,tweets):
 
 def plot_graph(Graph,threshold,window):
 
+
+    G_plot=Graph.copy()
+
     # Detect self-loop nodes before removing loops
-    self_loop_nodes = set(u for u, v in nx.selfloop_edges(Graph))
+    self_loop_nodes = set(u for u, v in nx.selfloop_edges(G_plot))
 
     # Remove self-loops from drawing
-    Graph.remove_edges_from(nx.selfloop_edges(Graph))
+    G_plot.remove_edges_from(nx.selfloop_edges(G_plot))
 
     #remove isolated nodes, with degree less than threshold
-    nodes_to_keep = [n for n in Graph.nodes() if Graph.degree(n) > threshold]
+    nodes_to_keep = [n for n in G_plot.nodes() if G_plot.degree(n) > threshold]
 
-    G_plot = Graph.subgraph(nodes_to_keep)
+    G_plot = G_plot.subgraph(nodes_to_keep)
     
     print("Number of edges in figure: ",G_plot.number_of_edges())
     print("Number of nodes in figure: ",len(nodes_to_keep))
@@ -86,3 +89,14 @@ def plot_graph(Graph,threshold,window):
 
     plt.axis('off')
     plt.show()
+
+
+def plot_largest_weak(Graph):
+    largest_cc = max(nx.weakly_connected_components(Graph), key=len)
+    subgraph = Graph.subgraph(largest_cc).copy()
+    plot_graph(subgraph,0,12)
+
+def plot_largest_strong(Graph):
+    largest_cc = max(nx.strongly_connected_components(Graph), key=len)
+    subgraph = Graph.subgraph(largest_cc).copy()
+    plot_graph(subgraph,0,12)

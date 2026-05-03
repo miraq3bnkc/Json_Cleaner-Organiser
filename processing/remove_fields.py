@@ -57,11 +57,10 @@ def extract_author(author):
     cleaned_author={
         "user_id": author.get("id"),
         "isBlueVerified":author.get("isBlueVerified"),
-        "description": author.get("description"),
         "followers": author.get("followers"),
         "following": author.get("following"),
         "createdAt": author.get("createdAt"),
-        "description_urls": entities[0],
+        "description_urls": entities[0], #keep for now think later
         "linked_urls": entities[1],
         "favouritesCount": author.get("favouritesCount"),
         "mediaCount": author.get("mediaCount"),
@@ -166,18 +165,15 @@ def clean_tweet(tweet, are_quote_data):
     }
 
     #If the data we are handling are not of the quote then we shall include
-    # "isReply", "url", "isQuote" fields
-    #Otherwise, those fields do not exist in the data of the quotes
+    # "isReply" fields
+    #since reply fields do not exist in quote data
     if not are_quote_data:
-        cleaned_tweet["isReply"] = tweet.get("isReply")
         if tweet.get("isReply"):
             cleaned_tweet["inReplyToId"]=tweet.get("inReplyToId")
             cleaned_tweet["inReplyToUserId"] = tweet.get("inReplyToUserId")
 
             #Update mentions list if needed
             cleaned_tweet["user_mentions"]=transform_mentions(tweet.get("inReplyToUsername"),cleaned_tweet["user_mentions"])
-
-        cleaned_tweet["url"] = tweet.get("url")
 
     # quoted tweet
     cleaned_quote={} #return empty quote if no quote was included
