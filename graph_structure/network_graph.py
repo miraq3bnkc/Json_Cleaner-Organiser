@@ -1,4 +1,3 @@
-import json
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -100,3 +99,22 @@ def plot_largest_strong(Graph):
     largest_cc = max(nx.strongly_connected_components(Graph), key=len)
     subgraph = Graph.subgraph(largest_cc).copy()
     plot_graph(subgraph,0,12)
+
+
+def get_graph_features(Graph):
+    #fix: the features may need some modification
+    #fix: define a function for self_loop nodes
+    G_plot=Graph.copy()
+
+    # Detect self-loop nodes before removing loops
+    self_loop_nodes = set(u for u, v in nx.selfloop_edges(G_plot))
+
+    # Remove self-loops from drawing
+    G_plot.remove_edges_from(nx.selfloop_edges(G_plot))
+    core=nx.core_number(G_plot)
+
+    betweenness=nx.betweenness_centrality(Graph, normalized=False, endpoints=False)
+    pagerank=nx.pagerank(Graph, alpha=0.85)
+    clustering=nx.clustering(Graph)
+
+    return [betweenness,pagerank,clustering,core, self_loop_nodes]
